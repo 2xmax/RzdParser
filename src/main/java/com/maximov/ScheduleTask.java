@@ -6,7 +6,6 @@ import com.maximov.data.TrainFilter;
 import com.maximov.data.TrainSearchResult;
 import com.maximov.notification.INotificationService;
 import com.maximov.notification.NotificationService;
-import com.maximov.selenium.TrainService;
 import com.maximov.selenium.pageobjects.PageException;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ public final class ScheduleTask extends TimerTask {
     private final TrainFilter filter;
 
     public ScheduleTask(TrainFilter filter) throws IOException {
-        this.trainService = new TrainService();
+        this.trainService = new com.maximov.http.TrainService();
         this.notificationService = new NotificationService();
         this.filter = filter;
     }

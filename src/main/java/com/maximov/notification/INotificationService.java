@@ -1,5 +1,6 @@
 package com.maximov.notification;
 
+import com.maximov.data.TrainFilter;
 import com.maximov.data.TrainSearchResult;
 
 /**
@@ -12,7 +13,7 @@ import com.maximov.data.TrainSearchResult;
  */
 
 public interface INotificationService {
-    void notifySuccess(TrainSearchResult result);
+    void notifySuccess(TrainFilter filter, TrainSearchResult result);
 
     void notifyServiceIsAvailable();
 

@@ -1,5 +1,6 @@
-package com.maximov.selenium.pageobjects;
+package com.maximov.data.providers.selenium.pageobjects;
 
+import com.maximov.data.SearchException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,7 +23,7 @@ public final class HomePage extends PageBase {
         super(driver);
     }
 
-    public ResultsPage fillSearchForm(String from, String to, Date when) throws PageException {
+    public ResultsPage fillSearchForm(String from, String to, Date when) throws SearchException {
         final String rootUrl = "http://rzd.ru";
         driver.navigate().to(rootUrl);
 
@@ -47,7 +48,7 @@ public final class HomePage extends PageBase {
             nAttempts--;
             wait(500);
         }
-        throw new PageException("Home page is stuck");
+        throw new SearchException("Home page is stuck");
     }
 
     private String formatDate(Date date) {

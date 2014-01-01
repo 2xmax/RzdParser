@@ -1,4 +1,4 @@
-package com.maximov.selenium;
+package com.maximov.data.providers.selenium;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;

@@ -1,4 +1,4 @@
-package com.maximov.http;
+package com.maximov.data.providers.http;
 
 import org.apache.commons.io.IOUtils;
 
@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.*;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -27,7 +26,7 @@ public class WebClient implements IWebClient {
      * request timeout before the exception raised.
      */
     private final int MAX_TIMEOUT_MS = 60000;
-    private CookieManager manager;
+    private CookieManager cookies;
 
     /**
      * Downloads the specified resource as a String.
@@ -39,10 +38,10 @@ public class WebClient implements IWebClient {
      */
     @Override
     public InputStream openRead(URL url, UserAgent userAgent) throws IOException {
-        if (manager == null) {
-            manager = new CookieManager();
-            manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(manager);
+        if (cookies == null) {
+            cookies = new CookieManager();
+            cookies.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+            CookieHandler.setDefault(cookies);
         }
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         HttpURLConnection.setFollowRedirects(true);

@@ -1,8 +1,7 @@
-package com.maximov.selenium.pageobjects;
+package com.maximov.data.providers.selenium.pageobjects;
 
-import org.openqa.selenium.JavascriptExecutor;
+import com.maximov.data.SearchException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 /**
  * Maxim Maximov, 2013
@@ -20,12 +19,12 @@ public abstract class PageBase {
         this.driver = driver;
     }
 
-    protected void wait(int timeout) throws PageException {
+    protected void wait(int timeout) throws SearchException {
         synchronized (driver) {
             try {
                 driver.wait(timeout);
             } catch (InterruptedException e) {
-                throw new PageException("wait failed", e);
+                throw new SearchException("wait failed", e);
             }
         }
     }

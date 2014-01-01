@@ -1,7 +1,7 @@
 package com.maximov;
 
 import com.maximov.data.TrainFilter;
-import com.maximov.selenium.pageobjects.results.SeatClasses;
+import com.maximov.data.providers.selenium.pageobjects.results.SeatClasses;
 
 import java.io.*;
 import java.text.ParseException;
@@ -22,7 +22,7 @@ import java.util.List;
 public class Options {
     public boolean isValid;
     public long timeout = 1000 * 60;
-    public TrainFilter filter;
+    public List<TrainFilter> filters;
 
     private static List<String> readLines(String file) throws IOException {
         List<String> ret = new ArrayList<String>();
@@ -42,9 +42,11 @@ public class Options {
         String from = null;
         String to = null;
         Date at = null;
+        String by = null;
+        String config = null;
         List<String> classes = new ArrayList<String>();
         classes.add(SeatClasses.Platzkart);
-
+        options.filters = new ArrayList<TrainFilter>();
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-from")) {
                 from = args[i + 1];
@@ -55,25 +57,41 @@ public class Options {
             if (args[i].equals("-at")) {
                 at = new SimpleDateFormat("dd.MM.yyyy").parse(args[i + 1]);
             }
+            if (args[i].equals("-by")) {
+                by = args[i + 1];
+            }
             if (args[i].equals("-config")) {
-                String filename = args[i + 1];
-                try {
-                    List<String> lines = readLines(filename);
-                    from = lines.get(0);
-                    to = lines.get(1);
-                    at = new SimpleDateFormat("dd.MM.yyyy").parse(lines.get(2));
-                } catch (IOException e) {
-                    System.out.println("Unable to read file " +filename);
-                }
+                config = args[i + 1];
             }
         }
-        if (from == null || to == null || at == null) {
+
+        if (config != null) {
+            try {
+                List<String> lines = readLines(config);
+                int nFilters = lines.size() / 4;
+                for (int i = 0; i < nFilters; i++) {
+                    from = lines.get(i * 4);
+                    to = lines.get(i * 4 + 1);
+                    at = new SimpleDateFormat("dd.MM.yyyy").parse(lines.get(i * 4 + 2));
+                    by = lines.get(i * 4 + 3);
+                    options.filters.add(new TrainFilter(from, to, at, classes, by));
+                }
+            } catch (IOException e) {
+                System.out.println("Unable to read file " + config);
+            }
+        } else {
+            if (from != null && to != null && at != null) {
+                options.filters.add(new TrainFilter(from, to, at, classes, by));
+            }
+        }
+
+        if (options.filters.size() == 0) {
             printUsage();
             options.isValid = false;
         } else {
             options.isValid = true;
         }
-        options.filter = new TrainFilter(from, to, at, classes);
+
         return options;
     }
 

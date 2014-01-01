@@ -1,4 +1,4 @@
-package com.maximov.http;
+package com.maximov.data.providers.http;
 
 import java.io.IOException;
 import java.io.InputStream;

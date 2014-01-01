@@ -1,8 +1,9 @@
-package com.maximov.selenium.pageobjects;
+package com.maximov.data.providers.selenium.pageobjects;
 
-import com.maximov.selenium.pageobjects.results.ParseResult;
-import com.maximov.selenium.pageobjects.results.Parser;
-import com.maximov.selenium.pageobjects.results.ResultsFormItem;
+import com.maximov.data.SearchException;
+import com.maximov.data.providers.selenium.pageobjects.results.ParseResult;
+import com.maximov.data.providers.selenium.pageobjects.results.Parser;
+import com.maximov.data.providers.selenium.pageobjects.results.ResultsFormItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.WebDriver;
@@ -25,7 +26,7 @@ public class ResultsPage extends PageBase {
         super(driver);
     }
 
-    public List<ResultsFormItem> parse() throws PageException {
+    public List<ResultsFormItem> parse() throws SearchException {
         log.debug("parsing page");
         int nAttempts = 20;
         ParseResult result = null;
@@ -41,7 +42,7 @@ public class ResultsPage extends PageBase {
 
         if (nAttempts <= 0) {
             log.debug("Number of attempts has been exceeded.");
-            throw new PageException("Number of attempts has been exceeded.");
+            throw new SearchException("Number of attempts has been exceeded.");
         }
         log.debug("Result page has been loaded.");
         return result.getTrains();

@@ -1,6 +1,6 @@
-package com.maximov.selenium.pageobjects.results;
+package com.maximov.data.providers.selenium.pageobjects.results;
 
-import com.maximov.selenium.pageobjects.PageException;
+import com.maximov.data.SearchException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,7 +20,7 @@ import java.util.*;
  */
 
 public class Parser {
-    public ParseResult parse(String html) throws PageException {
+    public ParseResult parse(String html) throws SearchException {
         List<ResultsFormItem> ret = new LinkedList<ResultsFormItem>();
         Document htmlDoc = Jsoup.parse(html);
 
@@ -41,7 +41,7 @@ public class Parser {
         return new ParseResult(true);
     }
 
-    private ResultsFormItem parseTrain(Element trainRow) throws PageException {
+    private ResultsFormItem parseTrain(Element trainRow) throws SearchException {
         Elements tds = trainRow.getElementsByTag("td");
         String trainId = parseTrainId(tds.get(2));
         Date departs = parseDateTimeCol(tds.get(3));
@@ -70,7 +70,7 @@ public class Parser {
         return ret;
     }
 
-    private Date parseDateTimeCol(Element dateCol) throws PageException {
+    private Date parseDateTimeCol(Element dateCol) throws SearchException {
         String time = dateCol.getElementsByClass("trlist__cell-pointdata__time").first().text().trim();
         String date = dateCol.getElementsByClass("trlist__cell-pointdata__date-sub").first().text().replace("|", "").trim();
         //is default city time?
@@ -83,7 +83,7 @@ public class Parser {
         try {
             return sdf.parse(date + " " + time);
         } catch (ParseException e) {
-            throw new PageException("Invalid date", e);
+            throw new SearchException("Invalid date", e);
         }
     }
 }

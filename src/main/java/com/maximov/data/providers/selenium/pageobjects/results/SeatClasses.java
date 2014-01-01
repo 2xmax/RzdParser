@@ -1,4 +1,4 @@
-package com.maximov.selenium.pageobjects.results;
+package com.maximov.data.providers.selenium.pageobjects.results;
 
 /**
  * Maxim Maximov, 2013

@@ -1,4 +1,4 @@
-package com.maximov.selenium.pageobjects;
+package com.maximov.data;
 
 /**
  * Maxim Maximov, 2013
@@ -9,12 +9,12 @@ package com.maximov.selenium.pageobjects;
  * Department of Computational Physics
  */
 
-public class PageException extends Exception {
-    public PageException(String msg, Exception cause) {
+public class SearchException extends Exception {
+    public SearchException(String msg, Exception cause) {
         super(msg, cause);
     }
 
-    public PageException(String msg) {
+    public SearchException(String msg) {
         super(msg);
     }
 }

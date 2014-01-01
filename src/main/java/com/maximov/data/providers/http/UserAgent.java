@@ -1,4 +1,4 @@
-package com.maximov.http;
+package com.maximov.data.providers.http;
 
 /**
  * Information about client type that will be send

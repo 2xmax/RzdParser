@@ -1,6 +1,7 @@
 package com.maximov.notification;
 
 import com.maximov.data.Train;
+import com.maximov.data.TrainFilter;
 import com.maximov.data.TrainSearchResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,8 +38,8 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void notifySuccess(TrainSearchResult result) {
-        sendEmail("Tickets has been found!", composeMessage(result));
+    public void notifySuccess(TrainFilter filter, TrainSearchResult result) {
+        sendEmail("Tickets has been found!", composeMessage(filter, result));
     }
 
     @Override
@@ -94,8 +95,10 @@ public class NotificationService implements INotificationService {
         }
     }
 
-    private String composeMessage(TrainSearchResult result) {
+    private String composeMessage(TrainFilter filter, TrainSearchResult result) {
         StringBuilder sb = new StringBuilder();
+        sb.append("Query:" + filter + "\r\n");
+        sb.append("=====================\r\n");
         for (Train item : result.getItems()) {
             sb.append(item.toString());
             sb.append("\r\n");

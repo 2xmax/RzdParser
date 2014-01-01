@@ -1,7 +1,5 @@
 package com.maximov.data;
 
-import com.maximov.selenium.pageobjects.PageException;
-
 import java.io.IOException;
 
 /**
@@ -13,5 +11,5 @@ import java.io.IOException;
  * Department of Computational Physics
  */
 public interface ITrainService {
-    TrainSearchResult find(TrainFilter request) throws PageException, IOException;
+    TrainSearchResult find(TrainFilter request) throws SearchException, IOException;
 }

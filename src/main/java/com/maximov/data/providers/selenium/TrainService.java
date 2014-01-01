@@ -1,12 +1,12 @@
-package com.maximov.selenium;
+package com.maximov.data.providers.selenium;
 
 import com.maximov.data.ITrainService;
 import com.maximov.data.Train;
 import com.maximov.data.TrainFilter;
 import com.maximov.data.TrainSearchResult;
-import com.maximov.selenium.pageobjects.HomePage;
-import com.maximov.selenium.pageobjects.ResultsPage;
-import com.maximov.selenium.pageobjects.results.ResultsFormItem;
+import com.maximov.data.providers.selenium.pageobjects.HomePage;
+import com.maximov.data.providers.selenium.pageobjects.ResultsPage;
+import com.maximov.data.providers.selenium.pageobjects.results.ResultsFormItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.WebDriver;
@@ -31,18 +31,21 @@ public class TrainService implements ITrainService {
     private WebDriver webDriver;
 
     @Override
-    public TrainSearchResult find(TrainFilter request) throws IOException {
-        log.debug("search request");
+    public TrainSearchResult find(TrainFilter filter) throws IOException {
+        log.debug("search filter");
         WebDriver driver = getWebDriver();
         HomePage home = new HomePage(driver);
         try {
-            ResultsPage results = home.fillSearchForm(request.getFrom(), request.getTo(), request.getWhen());
+            ResultsPage results = home.fillSearchForm(filter.getFrom(), filter.getTo(), filter.getWhen());
             List<ResultsFormItem> result = results.parse();
             List<Train> trains = new ArrayList<Train>();
             for (ResultsFormItem r : result) {
-                Map<String, Integer> filteredSeats = filterMap(r.getAvailableSeats(), request.getSeatTypes());
-                if (filteredSeats.size() > 0) {
-                    trains.add(new Train(r.getTrainId(), filteredSeats));
+                String trainCode = r.getTrainId();
+                if (!filter.isFilteredByTrainCode() || trainCode.toLowerCase().contains(filter.getTrainCode().toLowerCase())) {
+                    Map<String, Integer> filteredSeats = filterMap(r.getAvailableSeats(), filter.getSeatTypes());
+                    if (filteredSeats.size() > 0) {
+                        trains.add(new Train(trainCode, filteredSeats));
+                    }
                 }
             }
             log.info(result.size() + " non-filtered, " + trains.size() + " filtered train results has been found");

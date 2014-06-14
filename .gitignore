@@ -1,5 +1,6 @@
-target
 syntax: glob
-.idea/workspace.xml
+target
 log.txt
 out/*
+/.idea
+/*.iml

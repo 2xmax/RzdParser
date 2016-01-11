@@ -4,6 +4,7 @@ import com.maximov.data.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -23,9 +24,9 @@ import java.util.*;
 
 public class TrainService implements ITrainService {
 
-    private final String SESSION_URL = "http://pass.rzd.ru/timetable/public/ru?STRUCTURE_ID=735&layer_id=5371&dir=0&tfl=3&checkSeats=1&st0=%s&code0=%d&dt0=%s&st1=%s&code1=%d&dt1=%s";
-    private final String TICKETS_URL = SESSION_URL + "&rid=%d&SESSION_ID=%d";
-    private final String STATION_URL = "http://pass.rzd.ru/suggester?&lang=ru&lat=0&compactMode=y&stationNamePart=%s";
+    private final String SESSION_URL = "https://pass.rzd.ru/timetable/public/ru?STRUCTURE_ID=735&layer_id=5371&dir=0&tfl=3&checkSeats=1&st0=%s&code0=%d&dt0=%s&st1=%s&code1=%d&dt1=%s";
+    private final String TICKETS_URL = SESSION_URL + "&rid=%d";
+    private final String STATION_URL = "https://pass.rzd.ru/suggester?&lang=ru&lat=0&compactMode=y&stationNamePart=%s";
     private final Log log = LogFactory.getLog(TrainService.class);
     private final Map<String, Integer> stationCache = new HashMap<String, Integer>();
     private IWebClient webClient;
@@ -39,19 +40,28 @@ public class TrainService implements ITrainService {
 
     @Override
     public TrainSearchResult find(TrainFilter filter) throws SearchException, IOException {
-        RequestContext params = getRequestContext(filter);
         JSONObject obj = null;
         int maxRetry = 10;
         long waitTimeout = 1000;
         for (int i = 0; i < maxRetry; i++) {
             try {
+                RequestContext params = getRequestContext(filter);
                 if (obj != null && "OK".equals(obj.getString("result"))) {
                     return parse(obj, filter);
                 } else {
                     Thread.sleep(waitTimeout);
                     obj = getJson(filter, params);
                 }
-            } catch (InterruptedException e) {
+            } catch (JSONException je) {
+                try {
+                    // captcha workaround
+                    // todo: use backoff
+                    webClient = null;
+                    Thread.sleep(60000);
+                } catch (Exception ex) {
+                }
+                je.printStackTrace();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -60,7 +70,7 @@ public class TrainService implements ITrainService {
     }
 
     private JSONObject getJson(TrainFilter request, RequestContext params) throws IOException, SearchException {
-        URL url = new URL(String.format(TICKETS_URL, formatString(request.getFrom()), getStationId(request.getFrom()), formatDate(request.getWhen()), formatString(request.getTo()), getStationId(request.getTo()), formatDate(request.getWhen()), params.getrId(), params.getSessionId()));
+        URL url = new URL(String.format(TICKETS_URL, formatString(request.getFrom()), getStationId(request.getFrom()), formatDate(request.getWhen()), formatString(request.getTo()), getStationId(request.getTo()), formatDate(request.getWhen()), params.getrId()));
         String searchResult = getWebClient().downloadString(url, UserAgent.DEFAULT);
         JSONObject obj = new JSONObject(searchResult);
         return obj;
@@ -119,8 +129,7 @@ public class TrainService implements ITrainService {
         URL url = new URL(String.format(SESSION_URL, formatString(request.getFrom()), getStationId(request.getFrom()), formatDate(request.getWhen()), formatString(request.getTo()), getStationId(request.getTo()), formatDate(request.getWhen())));
         String str = getWebClient().downloadString(url, UserAgent.FIREFOX);
         JSONObject json = new JSONObject(str);
-        RequestContext ret = new RequestContext(json.getInt("SESSION_ID"), json.getInt("rid"));
-        return ret;
+        return new RequestContext(json.getInt("rid"));
     }
 
     private String formatString(String str) {
@@ -146,16 +155,10 @@ public class TrainService implements ITrainService {
     }
 
     private class RequestContext {
-        private final int sessionId;
         private final int rId;
 
-        public RequestContext(int sessionId, int rId) {
-            this.sessionId = sessionId;
+        public RequestContext(int rId) {
             this.rId = rId;
-        }
-
-        public int getSessionId() {
-            return sessionId;
         }
 
         public int getrId() {

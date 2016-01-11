@@ -39,7 +39,7 @@ public class NotificationService implements INotificationService {
 
     @Override
     public void notifySuccess(TrainFilter filter, TrainSearchResult result) {
-        sendEmail("Tickets has been found!", composeMessage(filter, result));
+        sendEmail("Tickets have been found!", composeMessage(filter, result));
     }
 
     @Override

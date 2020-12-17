@@ -129,7 +129,7 @@ public class TrainService implements ITrainService {
         URL url = new URL(String.format(SESSION_URL, formatString(request.getFrom()), getStationId(request.getFrom()), formatDate(request.getWhen()), formatString(request.getTo()), getStationId(request.getTo()), formatDate(request.getWhen())));
         String str = getWebClient().downloadString(url, UserAgent.FIREFOX);
         JSONObject json = new JSONObject(str);
-        return new RequestContext(json.getInt("rid"));
+        return new RequestContext(json.getLong("rid"));
     }
 
     private String formatString(String str) {
@@ -155,13 +155,14 @@ public class TrainService implements ITrainService {
     }
 
     private class RequestContext {
-        private final int rId;
+        private final long rId;
 
-        public RequestContext(int rId) {
+        // rID is sort of session ID, required parameter to pass
+        public RequestContext(long rId) {
             this.rId = rId;
         }
 
-        public int getrId() {
+        public long getrId() {
             return rId;
         }
     }
